@@ -108,7 +108,7 @@ class SAMUtils:
         contours, _ = cv2.findContours((mask > 0).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         polygons = []
         for contour in contours:
-            if cv2.contourArea(contour) > 10:
+            if cv2.contourArea(contour) > 100:
                 polygon = contour.flatten().tolist()
                 if len(polygon) >= 6:
                     polygons.append(polygon)
