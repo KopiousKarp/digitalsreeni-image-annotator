@@ -110,7 +110,7 @@ class SAMUtils:
                 box=bbox,
                 multimask_output=False,
                 )  # Need to be able to pass in the numpy image and prompt
-            mask = results[0].masks.data[0].cpu().numpy()
+            mask = results[0][0].cpu().numpy()
 
             if mask is not None:
                 print(f"Mask shape: {mask.shape}, Mask sum: {mask.sum()}")
