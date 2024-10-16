@@ -123,7 +123,7 @@ class SAMUtils:
 
                 prediction = {
                     "segmentation": contours[0],
-                    "score": float(results[1][0].boxes.conf[0])
+                    "score": float(results[1][0])
                 }
                 return prediction
             else:
