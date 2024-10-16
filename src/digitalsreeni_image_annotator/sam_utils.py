@@ -40,7 +40,7 @@ class SAMUtils:
     def change_sam_model(self, model_name):
         if model_name != "Pick a SAM Model":
             self.current_sam_model = model_name
-            self.sam_model = build_sam2(self.sam_configs[self.current_sam_model],self.sam_models[self.current_sam_model],device=self.device)
+            self.sam_model = build_sam2(self.model_configs[self.current_sam_model],self.sam_models[self.current_sam_model],device=self.device)
             self.sam_predictor = SAM2ImagePredictor(self.sam_model)
             print(f"Changed SAM model to: {model_name}")
         else:
