@@ -34,7 +34,7 @@ setup(
         "Pillow>=9.0.0",
         "tifffile>=2023.3.15",
         "czifile>=2019.7.2",
-        "opencv-python>=4.10.0",
+        "opencv-python-headless>=4.10.0",
         "pyyaml>=6.0.2",
         "scikit-image>=0.24.0",
         "ultralytics>=8.2.94",
