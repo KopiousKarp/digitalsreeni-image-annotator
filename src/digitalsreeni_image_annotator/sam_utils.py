@@ -13,10 +13,10 @@ class SAMUtils:
             "SAM 2 large": "/opt/sam2/checkpoints/sam2.1_hiera_large.pt"
         }
         self.model_configs = {
-            "SAM 2 tiny": "/opt/sam2/sam2/sam2_hiera_t.yaml",
-            "SAM 2 small": "/opt/sam2/sam2/sam2_hiera_s.yaml",
-            "SAM 2 base": "/opt/sam2/sam2/sam2_hiera_b+.yaml",
-            "SAM 2 large": "/opt/sam2/sam2/sam2_hiera_l.yaml"
+            "SAM 2 tiny": "configs/sam2.1/sam2.1_hiera_t.yaml",
+            "SAM 2 small": "configs/sam2.1/sam2.1_hiera_s.yaml",
+            "SAM 2 base": "configs/sam2.1/sam2.1_hiera_b+.yaml",
+            "SAM 2 large": "configs/sam2.1/sam2.1_hiera_l.yaml"
         }
         self.current_sam_model = None
         self.sam_model = None
