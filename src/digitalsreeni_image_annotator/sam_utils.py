@@ -1,26 +1,52 @@
 import numpy as np
 from PyQt5.QtGui import QImage, QColor
-from ultralytics import SAM
+from sam2.build_sam import build_sam2 
+from sam2.sam2_image_predictor import SAM2ImagePredictor
+import torch
 
 class SAMUtils:
     def __init__(self):
         self.sam_models = {
-            "SAM 2 tiny": "sam2_t.pt",
-            "SAM 2 small": "sam2_s.pt",
-            "SAM 2 base": "sam2_b.pt",
-            "SAM 2 large": "sam2_l.pt"
+            "SAM 2 tiny": "/opt/sam2/checkpoints/sam2.1_hiera_tiny.pt",
+            "SAM 2 small": "/opt/sam2/checkpoints/sam2.1_hiera_small.pt",
+            "SAM 2 base": "/opt/sam2/checkpoints/sam2.1_hiera_base_plus.pt",
+            "SAM 2 large": "/opt/sam2/checkpoints/sam2.1_hiera_large.pt"
+        }
+        self.model_configs = {
+            "SAM 2 tiny": "/opt/sam2/sam2/sam2_hiera_t.yaml",
+            "SAM 2 small": "/opt/sam2/sam2/sam2_hiera_s.yaml",
+            "SAM 2 base": "/opt/sam2/sam2/sam2_hiera_b+.yaml",
+            "SAM 2 large": "/opt/sam2/sam2/sam2_hiera_l.yaml"
         }
         self.current_sam_model = None
         self.sam_model = None
+        self.sam_predictor = None
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
 
+        if self.device.type == "cuda":
+        # use bfloat16 for the entire notebook
+            torch.autocast("cuda", dtype=torch.bfloat16).__enter__()
+            # turn on tfloat32 for Ampere GPUs (https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices)
+            if torch.cuda.get_device_properties(0).major >= 8:
+                torch.backends.cuda.matmul.allow_tf32 = True
+                torch.backends.cudnn.allow_tf32 = True
+
+        
     def change_sam_model(self, model_name):
         if model_name != "Pick a SAM Model":
             self.current_sam_model = model_name
-            self.sam_model = SAM(self.sam_models[self.current_sam_model])
+            self.sam_model = build_sam2(self.sam_configs[self.current_sam_model],self.sam_models[self.current_sam_model],device=self.device)
+            self.sam_predictor = SAM2ImagePredictor(self.sam_model)
             print(f"Changed SAM model to: {model_name}")
         else:
             self.current_sam_model = None
             self.sam_model = None
+            self.sam_predictor = None
             print("SAM model unset")
 
     def qimage_to_numpy(self, qimage):
@@ -77,7 +103,13 @@ class SAMUtils:
     def apply_sam_prediction(self, image, bbox):
         try:
             image_np = self.qimage_to_numpy(image)
-            results = self.sam_model(image_np, bboxes=[bbox])
+            self.sam_predictor.set_image(image_np)
+            results = self.sam_predictor.predict(
+                point_coords=None,
+                point_labels=None,
+                box=bbox,
+                multimask_output=False,
+                )  # Need to be able to pass in the numpy image and prompt
             mask = results[0].masks.data[0].cpu().numpy()
 
             if mask is not None:
@@ -108,7 +140,7 @@ class SAMUtils:
         contours, _ = cv2.findContours((mask > 0).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         polygons = []
         for contour in contours:
-            if cv2.contourArea(contour) > 100:
+            if cv2.contourArea(contour) > 200:
                 polygon = contour.flatten().tolist()
                 if len(polygon) >= 6:
                     polygons.append(polygon)
