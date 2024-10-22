@@ -44,7 +44,6 @@ from .import_formats import process_import_format
 
 import shutil 
 import copy
-from ultralytics import SAM
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
