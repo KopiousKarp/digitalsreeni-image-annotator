@@ -642,7 +642,7 @@ class ImageLabel(QLabel):
                 if self.sam_magic_wand_active:
                     self.sam_bbox = [pos[0], pos[1], pos[0], pos[1]]
                     self.sam_bbox_label = 0
-                    
+                    self.drawing_sam_bbox = True
                     
         self.update()
 
@@ -703,6 +703,11 @@ class ImageLabel(QLabel):
                     self.finish_painting()
                 elif self.current_tool == "eraser":
                     self.finish_erasing()
+            elif event.button() == Qt.RightButton:
+                self.sam_bbox[2] = pos[0]
+                self.sam_bbox[3] = pos[1]
+                self.drawing_sam_bbox = False
+                self.main_window.apply_sam_prediction()
         self.update()
             
 

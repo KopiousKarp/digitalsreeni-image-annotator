@@ -108,6 +108,7 @@ class SAMUtils:
             if bbox_area < 100:
                 #condense to a single point
                 point = [bbox[0], bbox[1]]
+                print(f"Condensing to a single point {point} with label {label}")
                 results = self.sam_predictor.predict(
                     point_coords=[point],
                     point_labels=[label],
