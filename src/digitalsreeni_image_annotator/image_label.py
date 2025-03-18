@@ -68,6 +68,7 @@ class ImageLabel(QLabel):
         #SAM
         self.sam_magic_wand_active = False
         self.sam_bbox = None
+        self.sam_bbox_label = None
         self.drawing_sam_bbox = False
         self.temp_sam_prediction = None
 
@@ -619,6 +620,7 @@ class ImageLabel(QLabel):
             if event.button() == Qt.LeftButton:
                 if self.sam_magic_wand_active:
                     self.sam_bbox = [pos[0], pos[1], pos[0], pos[1]]
+                    self.sam_bbox_label = 1
                     self.drawing_sam_bbox = True
                 elif self.editing_polygon:
                     self.handle_editing_click(pos, event)
@@ -636,6 +638,12 @@ class ImageLabel(QLabel):
                     self.start_painting(pos)
                 elif self.current_tool == "eraser":
                     self.start_erasing(pos)
+            elif event.button() == Qt.RightButton:
+                if self.sam_magic_wand_active:
+                    self.sam_bbox = [pos[0], pos[1], pos[0], pos[1]]
+                    self.sam_bbox_label = 0
+                    
+                    
         self.update()
 
     def mouseMoveEvent(self, event: QMouseEvent):

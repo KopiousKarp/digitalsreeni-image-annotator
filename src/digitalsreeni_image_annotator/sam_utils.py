@@ -100,16 +100,27 @@ class SAMUtils:
     def normalize_16bit_to_8bit(self, array):
         return ((array - array.min()) / (array.max() - array.min()) * 255).astype(np.uint8)
 
-    def apply_sam_prediction(self, image, bbox):
+    def apply_sam_prediction(self, image, bbox, label):
         try:
             image_np = self.qimage_to_numpy(image)
             self.sam_predictor.set_image(image_np)
-            results = self.sam_predictor.predict(
-                point_coords=None,
-                point_labels=None,
-                box=bbox,
-                multimask_output=False,
-                )  # Need to be able to pass in the numpy image and prompt
+            bbox_area = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
+            if bbox_area < 100:
+                #condense to a single point
+                point = [bbox[0], bbox[1]]
+                results = self.sam_predictor.predict(
+                    point_coords=[point],
+                    point_labels=[label],
+                    box=None,
+                    multimask_output=False,
+                )
+            else:
+                results = self.sam_predictor.predict(
+                    point_coords=None,
+                    point_labels=None,
+                    box=bbox,
+                    multimask_output=False,
+                    )  # Need to be able to pass in the numpy image and prompt
             mask = results[0][0]
 
             if mask is not None:

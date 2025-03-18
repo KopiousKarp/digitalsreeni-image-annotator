@@ -691,9 +691,11 @@ class ImageAnnotator(QMainWindow):
     
         x1, y1, x2, y2 = self.image_label.sam_bbox
         bbox = [min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)]
+
+
         print(f"Applying SAM prediction with bbox: {bbox}")
     
-        prediction = self.sam_utils.apply_sam_prediction(self.current_image, bbox)
+        prediction = self.sam_utils.apply_sam_prediction(self.current_image, bbox, self.image_label.sam_bbox_label)
     
         if prediction:
             temp_annotation = {
