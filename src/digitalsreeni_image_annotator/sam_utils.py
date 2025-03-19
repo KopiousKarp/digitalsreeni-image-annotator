@@ -35,6 +35,9 @@ class SAMUtils:
             if torch.cuda.get_device_properties(0).major >= 8:
                 torch.backends.cuda.matmul.allow_tf32 = True
                 torch.backends.cudnn.allow_tf32 = True
+        # adding multipoint prompting
+        self.point_list = []
+        self.label_list = []
 
         
     def change_sam_model(self, model_name):
@@ -107,15 +110,18 @@ class SAMUtils:
             bbox_area = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
             if bbox_area < 100:
                 #condense to a single point
-                point = [bbox[0], bbox[1]]
+                self.point_list.append([bbox[0], bbox[1]])
+                self.label_list.append(label)
                 print(f"Condensing to a single point {point} with label {label}")
                 results = self.sam_predictor.predict(
-                    point_coords=[point],
-                    point_labels=[label],
+                    point_coords=self.point_list,
+                    point_labels=[self.label_list],
                     box=None,
                     multimask_output=False,
                 )
             else:
+                self.point_list = []
+                self.label_list = []
                 results = self.sam_predictor.predict(
                     point_coords=None,
                     point_labels=None,
