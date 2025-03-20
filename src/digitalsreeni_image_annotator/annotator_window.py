@@ -21,6 +21,7 @@ from .soft_dark_stylesheet import soft_dark_stylesheet
 from .default_stylesheet import default_stylesheet
 
 from .dataset_splitter import DatasetSplitterTool
+from .sam_tracker import SAMTrackerTool
 from .annotation_statistics import show_annotation_statistics
 from .coco_json_combiner import show_coco_json_combiner
 from .stack_to_slices import show_stack_to_slices
@@ -1822,6 +1823,11 @@ class ImageAnnotator(QMainWindow):
         image_augmenter_action = QAction("Image Augmenter", self)
         image_augmenter_action.triggered.connect(self.show_image_augmenter)
         tools_menu.addAction(image_augmenter_action)
+
+        # Sam video tracker here
+        sam_video_tracker_action = QAction("SAM Video Tracker", self)
+        sam_video_tracker_action.triggered.connect(self.show_sam_video_tracker)
+        tools_menu.addAction(sam_video_tracker_action)
     
         # Help Menu
         help_menu = menu_bar.addMenu("&Help")
@@ -2119,6 +2125,11 @@ class ImageAnnotator(QMainWindow):
         self.dataset_splitter = DatasetSplitterTool(self)
         self.dataset_splitter.setWindowModality(Qt.ApplicationModal)
         self.dataset_splitter.show_centered(self)
+    
+    def show_sam_video_tracker(self):
+        self.sam_video_tracker = SAMTrackerTool(self)
+        self.sam_video_tracker.setWindowModality(Qt.ApplicationModal)
+        self.sam_video_tracker.show_centered(self)
         
     def show_annotation_statistics(self):
         if not self.all_annotations:

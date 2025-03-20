@@ -1,6 +1,7 @@
 import numpy as np
 from PyQt5.QtGui import QImage, QColor
-from sam2.build_sam import build_sam2 
+from sam2.build_sam import build_sam2
+from sam2.build_sam import build_sam2_video_predictor 
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 import torch
 
@@ -46,6 +47,11 @@ class SAMUtils:
             self.sam_model = build_sam2(self.model_configs[self.current_sam_model],self.sam_models[self.current_sam_model],device=self.device)
             self.sam_predictor = SAM2ImagePredictor(self.sam_model)
             print(f"Changed SAM model to: {model_name}")
+        #add video predictor here 
+        elif model_name == "video":
+            self.current_sam_model = "SAM 2 base"
+            self.sam_predictor = build_sam2_video_predictor(self.model_configs[self.current_sam_model],self.sam_models[self.current_sam_model],device=self.device)
+            print(f"Changed SAM model to: SAM 2 base for video prediction")
         else:
             self.current_sam_model = None
             self.sam_model = None
@@ -112,10 +118,10 @@ class SAMUtils:
                 #condense to a single point
                 self.point_list.append([bbox[0], bbox[1]])
                 self.label_list.append(label)
-                print(f"Condensing to a single point {point} with label {label}")
+                print(f"Condensing to a single point {self.point_list} with label {self.label_list}")
                 results = self.sam_predictor.predict(
                     point_coords=self.point_list,
-                    point_labels=[self.label_list],
+                    point_labels=self.label_list,
                     box=None,
                     multimask_output=False,
                 )
