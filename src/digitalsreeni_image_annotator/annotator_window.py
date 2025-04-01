@@ -185,6 +185,7 @@ class ImageAnnotator(QMainWindow):
     def new_project(self):
         project_file, _ = QFileDialog.getSaveFileName(self, "Create New Project", "", "Image Annotator Project (*.iap)")
         if project_file:
+            #NOTE: This doesn't work, have to input file extension manually
             # Ensure the file has the correct extension
             if not project_file.lower().endswith('.iap'):
                 project_file += '.iap'
@@ -2127,7 +2128,9 @@ class ImageAnnotator(QMainWindow):
         self.dataset_splitter.show_centered(self)
     
     def show_sam_video_tracker(self):
-        self.sam_video_tracker = SAMTrackerTool(self)
+        self.sam_video_tracker = SAMTrackerTool(self, 
+                                                annotations = self.all_annotations,
+                                                image_paths = self.image_paths)
         self.sam_video_tracker.setWindowModality(Qt.ApplicationModal)
         self.sam_video_tracker.show_centered(self)
         
