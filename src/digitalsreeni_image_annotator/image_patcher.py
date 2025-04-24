@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLa
                              QGridLayout, QComboBox, QApplication)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtCore import QTimer, QEventLoop
-from tifffile import TiffFile, imsave
+from tifffile import TiffFile, imwrite as imsave
 from PIL import Image
 import traceback
 
