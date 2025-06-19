@@ -1,0 +1,40 @@
+#!/bin/bash
+# detect system gpu architecture before building
+# Initialize GPU_TYPE variable
+GPU_TYPE="UNKNOWN"
+
+# Check for NVIDIA GPU
+if command -v nvidia-smi &> /dev/null; then
+    echo "NVIDIA GPU detected"
+    GPU_TYPE="cuda"
+# Check for AMD GPU
+elif command -v lspci &> /dev/null && lspci | grep -i "amd" | grep -i "vga\|3d\|display" &> /dev/null; then
+    echo "AMD GPU detected"
+    GPU_TYPE="rocm"
+# Check for Apple Silicon (M1, M2, etc.)
+elif [ "$(uname)" == "Darwin" ] && sysctl -n machdep.cpu.brand_string 2>/dev/null | grep -q "Apple M"; then
+    echo "Apple Silicon detected"
+    GPU_TYPE="m1"
+fi
+
+echo "Detected GPU architecture: $GPU_TYPE"
+export GPU_TYPE
+
+if [ "$GPU_TYPE" == "UNKNOWN" ]; then
+    echo "No supported GPU detected. Exiting."
+    exit 1
+fi
+
+# Proceed with the build process
+echo "Proceeding with build for $GPU_TYPE architecture..."
+
+# Build the Docker image with the appropriate tag
+echo "Building Docker image with tag: sreeni_$GPU_TYPE"
+if docker build -t "sreeni_$GPU_TYPE" -f "./env/$GPU_TYPE.dockerfile" ./env; then
+    echo "Docker image built successfully with tag: sreeni_$GPU_TYPE"
+else
+    echo "Failed to build Docker image. Exiting."
+    exit 1
+fi
+
+
