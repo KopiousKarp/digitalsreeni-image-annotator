@@ -1,3 +1,14 @@
+# Forked for J. Cristiano Thesis 
+Environment install with Docker
+TODO: add Docker install instructions
+### linux install
+   End goal a singular script that detects the system platform, installs the docker container if needed and runs the environment with options:
+      -test(runs all the scripts in the test directory)
+      -annotator(runs the GUI app)
+      -shell(sources the environment and opens a shell in the terminal)
+
+
+
 # DigitalSreeni Image Annotator and Toolkit
 
 ![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
