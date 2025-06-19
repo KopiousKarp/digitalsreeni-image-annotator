@@ -50,22 +50,38 @@ fi
 
 ##############################################################################################
 echo "running environment"
-xhost +
-docker run -it \
-      --net=host \
-      --cap-add=SYS_PTRACE \
-      --security-opt seccomp=unconfined \
-      --device=/dev/kfd \
-      --device=/dev/dri \
-      --group-add video \
-      --ipc=host \
-      --shm-size 8G \
-      -v ./:/work \
-      -v /media:/media \
-      -v $HOME/.Xauthority:/root/.Xauthority \
-      -v /tmp/.X11-unix:/tmp/.X11-unix \
-      -e DISPLAY=$DISPLAY \
-      sreeni_$GPU_TYPE bash
-
+if [ "$GPU_TYPE" == "rocm" ]; then
+    xhost +
+    docker run -it \
+        --net=host \
+        --cap-add=SYS_PTRACE \
+        --security-opt seccomp=unconfined \
+        --device=/dev/kfd \
+        --device=/dev/dri \
+        --group-add video \
+        --ipc=host \
+        --shm-size 8G \
+        -v ./:/work \
+        -v /media:/media \
+        -v $HOME/.Xauthority:/root/.Xauthority \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -e DISPLAY=$DISPLAY \
+        sreeni_$GPU_TYPE bash
+fi
+if [ "$GPU_TYPE" == "apple" ]; then
+    xhost +
+    docker run -it \
+        --net=host \
+        --cap-add=SYS_PTRACE \
+        --security-opt seccomp=unconfined \
+        --group-add video \
+        --ipc=host \
+        --shm-size 8G \
+        -v ./:/work \
+        -v $HOME/.Xauthority:/root/.Xauthority \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -e DISPLAY=$DISPLAY \
+        sreeni_$GPU_TYPE bash
+fi
 
 echo "docker command executed successfully."
